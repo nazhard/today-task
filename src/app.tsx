@@ -112,7 +112,7 @@ export default function App() {
         )}
       </For>
 
-      <Menu content="modol"/>
+      <Menu/>
     </main>
   )
 }
