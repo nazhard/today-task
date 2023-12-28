@@ -1,6 +1,9 @@
 // @refresh reload
-import { createSignal, batch, For, Show } from "solid-js"
-import { render } from "solid-js/web"
+import {
+  createSignal,
+  batch,
+  For
+} from "solid-js"
 import {
   createLocalStore,
   removeIndex
@@ -11,6 +14,7 @@ type TaskItem = {
   title: string
   description?: string
   done: boolean
+  edit: boolean
 }
 
 const [show, setShow] = createSignal(false)
@@ -32,7 +36,7 @@ export const Menu = () => {
       </a>
       <button
         onClick={isShow}
-        class="m-btn"
+        class="m-btn n"
         style="right: 15px">
         {plus}
       </button>
@@ -52,10 +56,14 @@ export default function App() {
         title: newTitle(),
         description: newDescription(),
         done: false,
+        edit: false, // i have no idea to get only "this" value.
       })
       setTitle("")
+      setDescription("")
     })
   }
+
+  const plus = (<svg xmlns="http://www.w3.org/2000/svg" width="50" height="50" viewBox="0 0 24 24"><path fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 12h7m7 0h-7m0 0V5m0 7v7"/></svg>)
 
   return (
     <main>
@@ -64,49 +72,81 @@ export default function App() {
         {
           tasks.length > 0
             ? 'Hei onii, wake up onii your task need to be done'
-            : 'Try add task'
+            : 'Are you sure don\'t have any task?'
         }
       </p>
-
       <Show when={show()}>
         <form onSubmit={addTask} class="m-content">
           <input
-            placeholder="enter todo and click +"
+            class="n"
+            placeholder="Title"
             required
             value={newTitle()}
             onInput={(e) => setTitle(e.currentTarget.value)}
           />
           <textarea
+            class="n"
             placeholder="Add description"
             value={newDescription()}
-            onInput={(e) => setDescription(e.currentTarget.value)}
-          />
-          <button type="submit">+</button>
+            onInput={(e) => setDescription(e.currentTarget.value)}>
+          </textarea>
+          <button
+            type="submit"
+            class="n">
+            {plus}
+          </button>
         </form>
       </Show>
       
       <For each={tasks}>
         {(task, i) => (
-          <div>
+          <div class="t">
             <input
               type="checkbox"
               checked={task.done}
               onChange={(e) => setTasks(i(), "done", e.currentTarget.checked)}
             />
-            <input
-              type="text"
-              value={task.title}
-              onChange={(e) => setTasks(i(), "title", e.currentTarget.value)}
-            />
+            <h3>{task.title}</h3>
             <Show when={task.description}>
-              <input
-                type="text"
+              <p
+              >
+                {task.description}
+              </p>
+            </Show>
+            <Show when={task.done}>
+              <div id="x-don">
+                This task has been completed
+              </div>
+            </Show>
+
+            <button
+              id="x-edit"
+              class="n"
+              onClick={() => setTasks(i(), "edit", !task.edit)}
+            >
+              EDIT
+            </button>
+            <Show when={task.edit}>
+              <h3>Edit Your Task</h3>
+
+              <textarea
+                class="n"
+                value={task.title}
+                onChange={(e) => setTasks(i(), "title", e.currentTarget.value)}
+              />
+              <textarea
+                class="n"
+                type="d"
                 value={task.description}
                 onChange={(e) => setTasks(i(), "description", e.currentTarget.value)}
               />
             </Show>
-            <button onClick={() => setTasks((t) => removeIndex(t, i()))}>
-              x
+
+            <button
+              id="x-del"
+              class="n"
+              onClick={() => setTasks((t) => removeIndex(t, i()))}>
+              DELETE
             </button>
           </div>
         )}
